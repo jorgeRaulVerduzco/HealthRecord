@@ -17,7 +17,7 @@ import javax.persistence.TypedQuery;
  * @author JORGE
  */
 public class UserDAO {
-
+//prueba
     private EntityManagerFactory emf;
 
     public UserDAO() {
