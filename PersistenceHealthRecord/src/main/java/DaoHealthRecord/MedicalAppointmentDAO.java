@@ -23,7 +23,7 @@ public class MedicalAppointmentDAO {
     private EntityManagerFactory emf;
 
     public MedicalAppointmentDAO() {
-        emf = Persistence.createEntityManagerFactory("ConexionPu");
+        emf = Persistence.createEntityManagerFactory("ConexionPU");
     }
 
     // Crear una cita médica
@@ -162,4 +162,79 @@ public class MedicalAppointmentDAO {
         query.setParameter("patient", patient);
         return query.getSingleResult();
     }
+    
+    public List<MedicalAppointment> buscarPorCurpPaciente(String curpPaciente) {
+    EntityManager em = emf.createEntityManager();
+    
+    TypedQuery<MedicalAppointment> query = em.createQuery(
+            "SELECT m FROM MedicalAppointment m JOIN m.patient p WHERE p.curp = :curpPaciente",
+            MedicalAppointment.class);
+    query.setParameter("curpPaciente", curpPaciente);
+    
+    return query.getResultList();
+}
+
+public void actualizarPorCurpPaciente(String curpPaciente, MedicalAppointment appointmentModificado) {
+    EntityManager em = emf.createEntityManager();
+    
+    // Para actualizar por CURP del paciente, necesitamos el ID del appointment específico
+    // que queremos actualizar, ya que un paciente puede tener múltiples citas
+    if (appointmentModificado.getMedicalAppointmentId() <= 0) {
+        return; // No se puede actualizar sin especificar qué cita exactamente
+    }
+    
+    // Primero verificamos que el paciente con ese CURP exista
+    Patient patient = em.createQuery(
+            "SELECT p FROM Patient p WHERE p.curp = :curpPaciente", Patient.class)
+            .setParameter("curpPaciente", curpPaciente)
+            .getSingleResult();
+    
+    if (patient != null) {
+        MedicalAppointment appointment = buscarPorId(appointmentModificado.getMedicalAppointmentId());
+        if (appointment != null && appointment.getPatient().getCurp().equals(curpPaciente)) {
+            // Actualizamos manteniendo la referencia al paciente correcta
+            appointmentModificado.setPatient(patient);
+            
+            em.getTransaction().begin();
+            em.merge(appointmentModificado);
+            em.getTransaction().commit();
+        }
+    }
+}
+
+public void eliminarPorCurpPaciente(String curpPaciente, long appointmentId) {
+    EntityManager em = emf.createEntityManager();
+    
+    // Para eliminar por CURP del paciente, necesitamos el ID del appointment específico
+    // que queremos eliminar, ya que un paciente puede tener múltiples citas
+    MedicalAppointment appointment = buscarPorId(appointmentId);
+    if (appointment != null && appointment.getPatient().getCurp().equals(curpPaciente)) {
+        em.getTransaction().begin();
+        em.remove(em.contains(appointment) ? appointment : em.merge(appointment));
+        em.getTransaction().commit();
+    }
+}
+
+public List<MedicalAppointment> buscarPorProfessionalLicense(String professionalLicense) {
+    EntityManager em = emf.createEntityManager();
+    
+    TypedQuery<MedicalAppointment> query = em.createQuery(
+            "SELECT m FROM MedicalAppointment m JOIN m.healthWorker h WHERE h.professionalLicense = :professionalLicense",
+            MedicalAppointment.class);
+    query.setParameter("professionalLicense", professionalLicense);
+    
+    return query.getResultList();
+}
+
+public List<MedicalAppointment> buscarPorCurpPacienteYProfessionalLicense(String curpPaciente, String professionalLicense) {
+    EntityManager em = emf.createEntityManager();
+    
+    TypedQuery<MedicalAppointment> query = em.createQuery(
+            "SELECT m FROM MedicalAppointment m JOIN m.patient p JOIN m.healthWorker h WHERE p.curp = :curpPaciente AND h.professionalLicense = :professionalLicense",
+            MedicalAppointment.class);
+    query.setParameter("curpPaciente", curpPaciente);
+    query.setParameter("professionalLicense", professionalLicense);
+    
+    return query.getResultList();
+}
 }

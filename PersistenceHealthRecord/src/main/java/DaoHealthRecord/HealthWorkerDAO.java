@@ -20,7 +20,7 @@ public class HealthWorkerDAO {
     private EntityManagerFactory emf;
 
     public HealthWorkerDAO() {
-        emf = Persistence.createEntityManagerFactory("ConexionPu");
+        emf = Persistence.createEntityManagerFactory("ConexionPU");
     }
 
     // Crear un trabajador de salud
@@ -117,5 +117,54 @@ public class HealthWorkerDAO {
         return healthWorker != null
                 && healthWorker.getProfessionalLicense() != null
                 && !healthWorker.getProfessionalLicense().isEmpty();
+    }
+
+    public void actualizarPorProfessionalLicense(String professionalLicense, HealthWorker healthWorkerModificado) {
+        EntityManager em = emf.createEntityManager();
+
+        HealthWorker healthWorkerExistente = buscarPorCedulaProfesional(professionalLicense);
+        if (healthWorkerExistente != null) {
+            // Actualizamos solo los datos del trabajador de salud, manteniendo su ID
+            healthWorkerModificado.setUserId(healthWorkerExistente.getUserId());
+
+            em.getTransaction().begin();
+            em.merge(healthWorkerModificado);
+            em.getTransaction().commit();
+        }
+    }
+
+    public void eliminarPorProfessionalLicense(String professionalLicense) {
+        EntityManager em = emf.createEntityManager();
+
+        HealthWorker healthWorker = buscarPorCedulaProfesional(professionalLicense);
+        if (healthWorker != null) {
+            em.getTransaction().begin();
+            em.remove(em.contains(healthWorker) ? healthWorker : em.merge(healthWorker));
+            em.getTransaction().commit();
+        }
+    }
+
+    public void actualizarPorCurp(String curp, HealthWorker healthWorkerModificado) {
+        EntityManager em = emf.createEntityManager();
+
+        HealthWorker healthWorkerExistente = buscarPorCurp(curp);
+        if (healthWorkerExistente != null) {
+            healthWorkerModificado.setUserId(healthWorkerExistente.getUserId());
+
+            em.getTransaction().begin();
+            em.merge(healthWorkerModificado);
+            em.getTransaction().commit();
+        }
+    }
+
+    public void eliminarPorCurp(String curp) {
+        EntityManager em = emf.createEntityManager();
+
+        HealthWorker healthWorker = buscarPorCurp(curp);
+        if (healthWorker != null) {
+            em.getTransaction().begin();
+            em.remove(em.contains(healthWorker) ? healthWorker : em.merge(healthWorker));
+            em.getTransaction().commit();
+        }
     }
 }

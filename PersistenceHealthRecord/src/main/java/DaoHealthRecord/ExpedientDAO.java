@@ -24,7 +24,7 @@ public class ExpedientDAO {
     private EntityManagerFactory emf;
 
     public ExpedientDAO() {
-        emf = Persistence.createEntityManagerFactory("ConexionPu");
+        emf = Persistence.createEntityManagerFactory("ConexionPU");
     }
 
     // Crear un expediente
@@ -146,4 +146,68 @@ public class ExpedientDAO {
         query.setParameter("fechaFin", fechaFin);
         return query.getResultList();
     }
+
+    public Expedient buscarPorCurpPaciente(String curpPaciente) {
+        EntityManager em = emf.createEntityManager();
+
+        TypedQuery<Expedient> query = em.createQuery(
+                "SELECT e FROM Expedient e JOIN e.patient p WHERE p.curp = :curpPaciente",
+                Expedient.class);
+        query.setParameter("curpPaciente", curpPaciente);
+
+        try {
+            return query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void actualizarPorCurpPaciente(String curpPaciente, Expedient expedientModificado) {
+        EntityManager em = emf.createEntityManager();
+
+        Expedient expedientExistente = buscarPorCurpPaciente(curpPaciente);
+        if (expedientExistente != null) {
+            // Actualizamos solo los datos del expediente, manteniendo su ID y relaciones
+            expedientModificado.setExpedientId(expedientExistente.getExpedientId());
+
+            // Si no se especifica un paciente, mantener el existente
+            if (expedientModificado.getPatient() == null) {
+                expedientModificado.setPatient(expedientExistente.getPatient());
+            }
+
+            // Si no se especifican documentos, mantener los existentes
+            if (expedientModificado.getDocuments() == null || expedientModificado.getDocuments().isEmpty()) {
+                expedientModificado.setDocuments(expedientExistente.getDocuments());
+            }
+
+            em.getTransaction().begin();
+            em.merge(expedientModificado);
+            em.getTransaction().commit();
+        }
+    }
+
+    public void eliminarPorCurpPaciente(String curpPaciente) {
+        EntityManager em = emf.createEntityManager();
+
+        Expedient expedient = buscarPorCurpPaciente(curpPaciente);
+        if (expedient != null) {
+            em.getTransaction().begin();
+            em.remove(em.contains(expedient) ? expedient : em.merge(expedient));
+            em.getTransaction().commit();
+        }
+    }
+
+    public List<Expedient> listarPorFechaCreacionYCurpPaciente(String curpPaciente, Date fechaInicio, Date fechaFin) {
+        EntityManager em = emf.createEntityManager();
+
+        TypedQuery<Expedient> query = em.createQuery(
+                "SELECT e FROM Expedient e JOIN e.patient p WHERE p.curp = :curpPaciente AND e.date BETWEEN :fechaInicio AND :fechaFin",
+                Expedient.class);
+        query.setParameter("curpPaciente", curpPaciente);
+        query.setParameter("fechaInicio", fechaInicio);
+        query.setParameter("fechaFin", fechaFin);
+
+        return query.getResultList();
+    }
+
 }

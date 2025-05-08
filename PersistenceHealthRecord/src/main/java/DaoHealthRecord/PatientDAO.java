@@ -21,7 +21,7 @@ public class PatientDAO {
     private EntityManagerFactory emf;
 
     public PatientDAO() {
-        emf = Persistence.createEntityManagerFactory("ConexionPu");
+        emf = Persistence.createEntityManagerFactory("ConexionPU");
 
     }
 
@@ -127,6 +127,41 @@ public class PatientDAO {
             return query.getSingleResult();
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public void actualizarPorCurp(String curp, Patient patientModificado) {
+        EntityManager em = emf.createEntityManager();
+
+        Patient patientExistente = buscarPorCurp(curp);
+        if (patientExistente != null) {
+            // Actualizamos solo los datos del paciente, manteniendo su ID y relaciones
+            patientModificado.setUserId(patientExistente.getUserId());
+
+            // Si no se especifica un tutor, mantener el existente
+            if (patientModificado.getTutor() == null) {
+                patientModificado.setTutor(patientExistente.getTutor());
+            }
+
+            // Si no se especifica un expediente, mantener el existente
+            if (patientModificado.getExpedient() == null) {
+                patientModificado.setExpedient(patientExistente.getExpedient());
+            }
+
+            em.getTransaction().begin();
+            em.merge(patientModificado);
+            em.getTransaction().commit();
+        }
+    }
+
+    public void eliminarPorCurp(String curp) {
+        EntityManager em = emf.createEntityManager();
+
+        Patient patient = buscarPorCurp(curp);
+        if (patient != null) {
+            em.getTransaction().begin();
+            em.remove(em.contains(patient) ? patient : em.merge(patient));
+            em.getTransaction().commit();
         }
     }
 }

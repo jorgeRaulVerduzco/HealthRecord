@@ -21,7 +21,7 @@ public class TutorDAO {
     private EntityManagerFactory emf;
 
     public TutorDAO() {
-        emf = Persistence.createEntityManagerFactory("ConexionPu");
+        emf = Persistence.createEntityManagerFactory("ConexionPU");
 
     }
 
@@ -123,5 +123,35 @@ public class TutorDAO {
     // Verificar si es tutor válido (mayor de edad)
     public boolean esTutorValido(Tutor tutor) {
         return tutor != null && tutor.getAge() >= 18;
+    }
+
+    public void actualizarPorCurp(String curp, Tutor tutorModificado) {
+        EntityManager em = emf.createEntityManager();
+
+        Tutor tutorExistente = buscarPorCurp(curp);
+        if (tutorExistente != null) {
+            // Actualizamos solo los datos del tutor, manteniendo su ID y relaciones
+            tutorModificado.setUserId(tutorExistente.getUserId());
+
+            // Si el tutor modificado no tiene pacientes asignados, mantener los existentes
+            if (tutorModificado.getPatients() == null || tutorModificado.getPatients().isEmpty()) {
+                tutorModificado.setPatients(tutorExistente.getPatients());
+            }
+
+            em.getTransaction().begin();
+            em.merge(tutorModificado);
+            em.getTransaction().commit();
+        }
+    }
+
+    public void eliminarPorCurp(String curp) {
+        EntityManager em = emf.createEntityManager();
+
+        Tutor tutor = buscarPorCurp(curp);
+        if (tutor != null) {
+            em.getTransaction().begin();
+            em.remove(em.contains(tutor) ? tutor : em.merge(tutor));
+            em.getTransaction().commit();
+        }
     }
 }

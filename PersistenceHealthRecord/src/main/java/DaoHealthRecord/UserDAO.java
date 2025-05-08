@@ -17,11 +17,11 @@ import javax.persistence.TypedQuery;
  * @author JORGE
  */
 public class UserDAO {
-//prueba
+
     private EntityManagerFactory emf;
 
     public UserDAO() {
-        emf = Persistence.createEntityManagerFactory("ConexionPu");
+        emf = Persistence.createEntityManagerFactory("ConexionPU");
     }
 
     // Crear un usuario
@@ -111,6 +111,31 @@ public class UserDAO {
             return query.getSingleResult();
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public void actualizarPorCurp(String curp, User userModificado) {
+        EntityManager em = emf.createEntityManager();
+
+        User userExistente = buscarPorCurp(curp);
+        if (userExistente != null) {
+            // Actualizamos solo los datos del usuario, manteniendo su ID
+            userModificado.setUserId(userExistente.getUserId());
+
+            em.getTransaction().begin();
+            em.merge(userModificado);
+            em.getTransaction().commit();
+        }
+    }
+
+    public void eliminarPorCurp(String curp) {
+        EntityManager em = emf.createEntityManager();
+
+        User user = buscarPorCurp(curp);
+        if (user != null) {
+            em.getTransaction().begin();
+            em.remove(em.contains(user) ? user : em.merge(user));
+            em.getTransaction().commit();
         }
     }
 }

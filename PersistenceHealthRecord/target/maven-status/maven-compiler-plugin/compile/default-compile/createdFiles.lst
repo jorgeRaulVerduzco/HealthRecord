@@ -12,6 +12,7 @@ IDaoHealthRecord\IExpedientDAO.class
 Entities\Tutor.class
 DaoHealthRecord\PatientDAO.class
 IDaoHealthRecord\IHealthWorkerDAO.class
+DaoHealthRecord\Prueba.class
 IDaoHealthRecord\IPatientDAO.class
 DaoHealthRecord\TutorDAO.class
 Entities\Patient.class
