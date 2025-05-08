@@ -28,73 +28,75 @@ public class Document implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "document_id")
-    private long documentID;
-
+    private long documentId;
+    
     @Column(length = 50)
     private String type;
-
+    
     @Column(name = "name_document", length = 255)
     private String nameDocument;
-
+    
     @Lob
     @Column(name = "content_multimedia")
     private String contentMultimedia;
-
+    
     @ManyToOne
     @JoinColumn(name = "expedient_id")
     private Expedient expedient;
-
+    
     public Document() {
     }
-
+    
     public Document(String type, String nameDocument, String contentMultimedia) {
         this.type = type;
         this.nameDocument = nameDocument;
         this.contentMultimedia = contentMultimedia;
     }
-
-    public long getDocumentID() {
-        return documentID;
+    
+    public long getDocumentId() {
+        return documentId;
     }
-
-    public void setDocumentID(long documentID) {
-        this.documentID = documentID;
+    
+    public void setDocumentId(long documentId) {
+        this.documentId = documentId;
     }
-
+    
     public String getType() {
         return type;
     }
-
+    
     public void setType(String type) {
         this.type = type;
     }
-
+    
     public String getNameDocument() {
         return nameDocument;
     }
-
+    
     public void setNameDocument(String nameDocument) {
         this.nameDocument = nameDocument;
     }
-
+    
     public String getContentMultimedia() {
         return contentMultimedia;
     }
-
+    
     public void setContentMultimedia(String contentMultimedia) {
         this.contentMultimedia = contentMultimedia;
     }
-
+    
     public Expedient getExpedient() {
         return expedient;
     }
-
+    
     public void setExpedient(Expedient expedient) {
         this.expedient = expedient;
     }
-
+    
     @Override
     public String toString() {
-        return "Document{" + "documentID=" + documentID + ", type=" + type + ", nameDocument=" + nameDocument + ", contentMultimedia=" + contentMultimedia + '}';
+        return "Document{" + "documentId=" + documentId + ", type=" + type + 
+               ", nameDocument=" + nameDocument + 
+               ", expedientId=" + (expedient != null ? expedient.getExpedientId() : "null") + '}';
     }
 }

@@ -5,6 +5,8 @@
 package Entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -50,13 +52,28 @@ public class Expedient implements Serializable {
     private boolean authorization;
 
     public Expedient() {
+        this.documents = new ArrayList<>();
     }
 
+    public Expedient(Patient patient, Date date, boolean authorization) {
+        this.patient = patient;
+        this.date = date;
+        this.authorization = authorization;
+        this.documents = new ArrayList<>();
+    }
+
+    // Constructor para compatibilidad con el código existente
     public Expedient(Patient patient, Date date, List<Document> documents, boolean authorization) {
         this.patient = patient;
         this.date = date;
-        this.documents = documents;
         this.authorization = authorization;
+        this.documents = new ArrayList<>();
+        if (documents != null) {
+            this.documents.addAll(documents);
+            for (Document doc : documents) {
+                doc.setExpedient(this);
+            }
+        }
     }
 
     public long getExpedientId() {
@@ -89,6 +106,16 @@ public class Expedient implements Serializable {
 
     public void setDocuments(List<Document> documents) {
         this.documents = documents;
+        if (documents != null) {
+            for (Document document : documents) {
+                document.setExpedient(this);
+            }
+        }
+    }
+
+    public void addDocument(Document document) {
+        documents.add(document);
+        document.setExpedient(this);
     }
 
     public boolean isAuthorization() {
@@ -101,6 +128,11 @@ public class Expedient implements Serializable {
 
     @Override
     public String toString() {
-        return "Expedient{" + "expedientId=" + expedientId + ", patient=" + patient + ", date=" + date + ", documents=" + documents + ", authorization=" + authorization + '}';
+        return "Expedient{"
+                + "expedientId=" + expedientId
+                + ", patientId=" + (patient != null ? patient.getPatientId() : "null")
+                + ", date=" + date
+                + ", documentsCount=" + (documents != null && documents instanceof Collection<?> ? ((Collection<?>) documents).size() : "lazy")
+                + ", authorization=" + authorization + '}';
     }
 }
