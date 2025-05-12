@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create an appointment</title>
+</head>
+<body>
+    <header>
+        <p>Secretary of Health </p>
+        <img src="../imgs/healthcare.svg" alt="Logo" class="photo-logo" />
+        <img src="../imgs/doctor.svg" alt="Doctor" class="photo-doctor" />
+    </header>
+    <main>
+    <h1>Create an appointment</h1>
+    <form action="">
+        <fieldset>
+            <label for="patient">Patient:</label>
+            <input type="text" id="patient" name="patient" required>
+
+            <label label for="doctor">Doctor:</label>
+            <input type="text" id="doctor" name="doctor" required>
+
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description" required>
+
+            <label for="date">Date & Time:</label>
+            <input type="datetime" id="datetime" name="datetime" required>
+        </fieldset>
+        <footer>
+            <button type="submit" class="button-continue">Create Appointment</button>
+        </footer>
+    </form>
+</main>
+</body>
+</html>
