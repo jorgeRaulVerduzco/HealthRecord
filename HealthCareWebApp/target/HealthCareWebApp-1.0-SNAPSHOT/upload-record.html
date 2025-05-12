@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <link rel="stylesheet" href="styles/header.css" />
+   <link rel="stylesheet" href="styles/main-pages.css" />
+</head>
+<body>
+  <header>
+    <p>Secretary of Health </p>
+    <div class="header-icons">
+    <img src="imgs/user.svg" alt="User" class="photo-user" />
+    <img src="imgs/healthcare.svg" alt="Logo" class="photo-logo" />
+    </div>
+  </header>
+  <main>
+    <h1>Upload record</h1>
+    <form>
+      <fieldset>
+        <label for="upload_file">Upload file:</label>
+        <input type="file" id="upload_file" name="upload_file" required>
+
+        <label for="fingerprint" class="text">Fingerprint authentication:</label>
+        <img src="imgs\fingerprint.svg" alt="Fingerprint" class="fingerprint">
+      </fieldset>
+      <footer>
+        <button type="submit" class="button-continue">Upload</button>
+      </footer>
+    </form>
+</main>
+</body>
+</html>
