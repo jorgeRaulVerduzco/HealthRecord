@@ -1,41 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentication</title>
-    <link rel="stylesheet" href="..\styles\" type="text/css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Authentication</title>
+  <link rel="stylesheet" href="/styles/authentication.css" />
+  <link rel="stylesheet" href="/styles/header.css" />
+
 </head>
 <body>
-    <main>
-        <header>
-            <p>Secretary of Health </p>
-            <img src="../imgs/healthcare.svg" alt="Logo" class="photo-logo" />
-        </header>
-        <form action="main-page-doctor.html">
-            <h1 class="text">Authentication</h1>
-            <fieldset>
-                <label for="curp" class="text">Curp:</label>
-                <input type="curp" id="curp" name="curp" class="text" required>
+  <main>
+    <header>
+      <p>Secretary of Health</p>
+      <img src="../imgs/healthcare.svg" alt="Logo" class="photo-logo" />
+    </header>
 
-                <label for="age" class="text">Age:</label>
-                <input type="number" id="age" name="age" class="text" required>
+    <form action="main-page-doctor.html" class="auth-form">
+      <fieldset>
+        <h1>Authentication</h1>
 
-                <label for="fingerprint" class="text">Fingerprint:</label>
-                <img src="..\imgs\fingerprint.svg" alt="Fingerprint" class="fingerprint">
-                
-                <label for="user_type" class="text">User Type:</label>
+        <label for="curp">Curp:</label>
+        <input type="text" id="curp" name="curp" required />
 
-                <input type="checkbox" id="user_type" name="user_type" class="text">
-                <label for="user_type" class="text">Doctor</label>
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required />
 
-                <input type="checkbox" id="user_type" name="user_type" class="text">
-                <label for="user_type" class="text">Patient</label>
-            </fieldset>
-            <footer>
-                <button type="submit" class="button-continue">Create</button>
-            </footer>
-        </form>
-    </main>
+        <label>Fingerprint:</label>
+        <img src="../imgs/fingerprint.svg" alt="Fingerprint" class="fingerprint" />
+
+        <label>User Type:</label>
+        <div class="user-type">
+          <input type="radio" id="doctor" name="user_type" value="doctor" required />
+          <label for="doctor">Doctor</label>
+          <input type="radio" id="patient" name="user_type" value="patient" />
+          <label for="patient">Patient</label>
+        </div>
+
+        <button type="submit" class="button-continue">Continue</button>
+      </fieldset>
+    </form>
+  </main>
 </body>
 </html>

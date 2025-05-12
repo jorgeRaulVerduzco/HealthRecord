@@ -4,16 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="/styles/header.css" />
+     <link rel="stylesheet" href="/styles/main-pages.css" />
 </head>
 <body>
-<main>
     <header>
         <p>Secretary of Health </p>
-        <img src="../imgs/healthcare.svg" alt="Logo" class="photo-logo" />
+        <div class="header-icons">
         <img src="../imgs/doctor.svg" alt="Doctor" class="photo-doctor" />
+        <img src="../imgs/healthcare.svg" alt="Logo" class="photo-logo" />
+        </div>
     </header>
+    <main>
     <h1>Expedient</h1>
-    <form action="">
+    <form>
         <fieldset>
             <label label for="professional_id">Professional ID:</label>
             <input type="text" id="professional_id" name="professional_id" required>
@@ -23,12 +27,13 @@
 
             <label for="fingerprint" class="text">Fingerprint authentication:</label>
             <img src="..\imgs\fingerprint.svg" alt="Fingerprint" class="fingerprint">
+            <img src="../imgs/expedient.svg" alt="Expedient" class="photo-expedient"/>
+
         </fieldset>
         <footer>
             <button type="submit" class="button-continue">Continue</button>
         </footer>
     </form>
-    <img src="../imgs/expedient.svg" alt="Expedient" class="photo-expedient"/>
 </main>
 </body>
 </html>
