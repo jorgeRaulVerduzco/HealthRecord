@@ -5,6 +5,8 @@
 package Entities;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -16,6 +18,9 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 /**
  *
  * @author JORGE
@@ -24,7 +29,7 @@ import javax.persistence.Table;
 @Table(name = "User")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
-public class User implements Serializable {
+public class User implements Serializable, UserDetails {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -122,5 +127,36 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "User{" + "userId=" + userId + ", curp=" + curp + ", name=" + name + ", lastName=" + lastName + ", password=" + password + ", biometricData=" + biometricData + ", age=" + age + '}';
+    }
+
+   @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        String role = this.getClass().getSimpleName().toUpperCase();
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
+    }
+
+    @Override
+    public String getUsername() {
+        return curp; // Usamos el CURP como username
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
