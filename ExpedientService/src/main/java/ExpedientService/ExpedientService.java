@@ -8,6 +8,77 @@ package ExpedientService;
  *
  * @author JORGE
  */
+import DaoHealthRecord.*;
+import Entities.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
+@Service
 public class ExpedientService {
-    
+
+ private final ExpedientDAO expedientDao;
+  private final Path uploadPath;
+
+  @Autowired
+  public ExpedientService(ExpedientDAO expedientDao, Path uploadPath) {
+    this.expedientDao = expedientDao;
+    this.uploadPath = uploadPath;
+  }
+
+  /** Crea expediente si no existe y guarda el documento */
+  public Expedient addDocumentToPatient(String curpPaciente, MultipartFile file) {
+    Expedient exp = expedientDao.buscarPorCurpPaciente(curpPaciente);
+    if (exp == null) {
+      // crear paciente y expediente nuevo si hace falta
+      throw new RuntimeException("Paciente con CURP " + curpPaciente + " no encontrado");
+    }
+    // guardar archivo en disco
+    String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+    try {
+      Path target = uploadPath.resolve(filename);
+      Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+    } catch (IOException e) {
+      throw new RuntimeException("Error guardando archivo", e);
+    }
+    // crear entidad Document
+    Document doc = new Document();
+    doc.setType("EXPEDIENT_IMAGE");
+    doc.setNameDocument(filename);
+    doc.setContentMultimedia(null); // no usamos BLOB, servimos desde disk
+    exp.addDocument(doc);
+    expedientDao.actualizar(exp);
+    return exp;
+  }
+
+  /** Devuelve la ruta absoluta del recurso para servirlo */
+  public Resource loadDocumentAsResource(String filename) {
+    try {
+      Path file = uploadPath.resolve(filename).normalize();
+      Resource resource = new UrlResource(file.toUri());
+      if (resource.exists() || resource.isReadable()) {
+        return resource;
+      } else {
+        throw new RuntimeException("No se puede leer el archivo: " + filename);
+      }
+    } catch (MalformedURLException e) {
+      throw new RuntimeException("URL inválida: " + filename, e);
+    }
+  }
+  
+  public Expedient getExpedientByCurp(String curpPaciente) {
+    Expedient exp = expedientDao.buscarPorCurpPaciente(curpPaciente);
+    if (exp == null) {
+        throw new RuntimeException("Paciente con CURP " + curpPaciente + " no encontrado");
+    }
+    return exp;
+}
 }
