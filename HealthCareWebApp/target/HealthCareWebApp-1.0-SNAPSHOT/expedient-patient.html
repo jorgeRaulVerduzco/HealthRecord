@@ -1,32 +1,45 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="styles/header.css" />
-     <link rel="stylesheet" href="styles/main-pages.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Subir Expediente</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/header.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/main-pages.css" />
 </head>
 <body>
     <header>
-        <p>Secretary of Health </p>
+        <p>Secretary of Health</p>
         <div class="header-icons">
-    <img src="imgs/user.svg" alt="User" class="photo-user" />
-    <img src="imgs/healthcare.svg" alt="Logo" class="photo-logo" />
-    </div>
+            <img src="${pageContext.request.contextPath}/imgs/user.svg" alt="User" class="photo-user" />
+            <img src="${pageContext.request.contextPath}/imgs/healthcare.svg" alt="Logo" class="photo-logo" />
+        </div>
     </header>
+
     <main>
-    <h1>Expedient</h1>
-    <form >
-        <fieldset>
-            <label for="fingerprint" class="text">Fingerprint authentication:</label>
-            <img src="imgs\fingerprint.svg" alt="Fingerprint" class="fingerprint">
-         <img src="imgs/expedient.svg" alt="Expedient" class="photo-expedient"/>
-        </fieldset>
-        <footer>
-            <button type="submit" class="button-continue">Continue</button>
-        </footer>
-    </form>
-</main>
+        <h1>Subir Documento de Expediente</h1>
+        <c:if test="${not empty message}">
+            <div class="flash-message">
+                <p>${message}</p>
+            </div>
+        </c:if>
+        <form action="${pageContext.request.contextPath}/expedient/upload" method="post" enctype="multipart/form-data">
+            <fieldset>
+                <label for="curpPaciente">CURP del Paciente:</label>
+                <input type="text" id="curpPaciente" name="curpPaciente" value="${curpPaciente}" placeholder="Ej: ABCD123456HDFRRS09" required />
+
+                <label for="file" class="text">Seleccionar archivo:</label>
+                <input type="file" id="file" name="file" accept="image/*,application/pdf" required />
+
+                <img src="${pageContext.request.contextPath}/imgs/fingerprint.svg" alt="Fingerprint" class="fingerprint" />
+                <img src="${pageContext.request.contextPath}/imgs/expedient.svg" alt="Expedient" class="photo-expedient" />
+            </fieldset>
+            <footer>
+                <button type="submit" class="button-continue">Continuar</button>
+            </footer>
+        </form>
+    </main>
 </body>
 </html>
