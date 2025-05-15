@@ -9,13 +9,13 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
+import org.springframework.stereotype.Repository;
 
-/**
- *
- * @author JORGE
- */
+@Repository
+@Transactional
 public class UserDAO {
 
     private EntityManagerFactory emf;
@@ -114,12 +114,12 @@ public class UserDAO {
         }
     }
 
+    // Actualizar usuario por CURP
     public void actualizarPorCurp(String curp, User userModificado) {
         EntityManager em = emf.createEntityManager();
 
         User userExistente = buscarPorCurp(curp);
         if (userExistente != null) {
-            // Actualizamos solo los datos del usuario, manteniendo su ID
             userModificado.setUserId(userExistente.getUserId());
 
             em.getTransaction().begin();
@@ -128,6 +128,7 @@ public class UserDAO {
         }
     }
 
+    // Eliminar usuario por CURP
     public void eliminarPorCurp(String curp) {
         EntityManager em = emf.createEntityManager();
 

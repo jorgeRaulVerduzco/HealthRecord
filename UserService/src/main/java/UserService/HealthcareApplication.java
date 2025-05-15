@@ -10,8 +10,9 @@ package UserService;
  */
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+@EnableJpaRepositories(basePackages = "DaoHealthRecord")
+@SpringBootApplication(scanBasePackages = {"DaoHealthRecord","Entities","useService"})
 public class HealthcareApplication {
     public static void main(String[] args) {
         SpringApplication.run(HealthcareApplication.class, args);

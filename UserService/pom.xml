@@ -1,61 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>com.secretaria.salud</groupId>
     <artifactId>expediente-clinico-electronico</artifactId>
     <version>1.0.0</version>
     <packaging>war</packaging>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <jakartaee.version>9.1.0</jakartaee.version>
         <spring.boot.version>2.7.0</spring.boot.version>
         <jwt.version>0.11.5</jwt.version>
         <mysql.version>8.0.33</mysql.version>
     </properties>
-    
+
     <dependencies>
-        <!-- Jakarta EE (para JPA) -->
+        <!-- Jakarta Servlet API compatible con Spring Boot 2.x -->
         <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-api</artifactId>
-            <version>${jakartaee.version}</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>4.0.4</version>
             <scope>provided</scope>
         </dependency>
-        
-        <!-- Spring Boot Starter Web -->
+
+        <!-- Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${spring.boot.version}</version>
         </dependency>
-        
-        <!-- Spring Boot Starter Security -->
+
+        <!-- Spring Security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
             <version>${spring.boot.version}</version>
         </dependency>
-        
-        <!-- Spring Boot Starter Data JPA -->
+
+        <!-- Spring Data JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
             <version>${spring.boot.version}</version>
         </dependency>
-        
-        <!-- MySQL Connector (versión corregida) -->
+
+        <!-- MySQL Connector -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>${mysql.version}</version>
         </dependency>
-        
-        <!-- JWT (versión corregida) -->
+
+        <!-- JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -73,28 +73,28 @@
             <version>${jwt.version}</version>
             <scope>runtime</scope>
         </dependency>
-        
+
         <!-- RabbitMQ -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
             <version>${spring.boot.version}</version>
         </dependency>
-        
+
         <!-- SOAP Web Services -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web-services</artifactId>
             <version>${spring.boot.version}</version>
         </dependency>
-        
+
         <!-- Hibernate Validator -->
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>6.2.5.Final</version>
         </dependency>
-        
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -102,8 +102,8 @@
             <version>1.18.28</version>
             <scope>provided</scope>
         </dependency>
-        
-        <!-- Testing -->
+
+        <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -116,6 +116,8 @@
             <version>5.7.6</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Módulos personalizados -->
         <dependency>
             <groupId>com.mycompany</groupId>
             <artifactId>PersistenceHealthRecord</artifactId>
@@ -127,22 +129,16 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-            <version>5.7.1</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
             <groupId>com.mycompany</groupId>
             <artifactId>ExpedientService</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
-    
+
     <build>
         <finalName>expediente-clinico</finalName>
         <plugins>
-            <!-- Plugin para Spring Boot -->
+            <!-- Spring Boot Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -155,8 +151,8 @@
                     </execution>
                 </executions>
             </plugin>
-            
-            <!-- Compiler Plugin -->
+
+            <!-- Compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -166,8 +162,8 @@
                     <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
-            
-            <!-- War Plugin -->
+
+            <!-- WAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
