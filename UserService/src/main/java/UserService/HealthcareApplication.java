@@ -10,10 +10,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
     "DaoHealthRecord",
     "UserService",
     "Dtos",
-    "Entities" // <-- Esta línea debe estar exactamente así
+    "Entities" //
 })
 @EnableJpaRepositories(basePackages = "DaoHealthRecord")
-@EntityScan(basePackages = "Entities") // <-- AÑADE ESTA LÍNEA
+@EntityScan(basePackages = "Entities") 
 public class HealthcareApplication {
     public static void main(String[] args) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
