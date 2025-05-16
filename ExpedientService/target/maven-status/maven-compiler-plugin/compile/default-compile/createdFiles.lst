@@ -1,6 +1,8 @@
+ExpedientService\WebConfig.class
 ExpedientService\ExpedientController.class
 ExpedientService\DaoConfig.class
 ExpedientService\FileStorageConfig.class
-ExpedientService\FrontController.class
+ExpedientService\ExpedientController$DocumentDTO.class
 ExpedientService\ExpedientServiceApplication.class
+ExpedientService\ExpedientController$ExpedientDTO.class
 ExpedientService\ExpedientService.class

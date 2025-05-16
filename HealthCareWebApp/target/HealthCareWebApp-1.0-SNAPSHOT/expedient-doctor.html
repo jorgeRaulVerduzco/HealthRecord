@@ -1,34 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Expedient - Médico</title>
-  <link rel="stylesheet" href="/styles/header.css" />
-  <link rel="stylesheet" href="/styles/main-pages.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Médico ‒ Ver Expediente</title>
+  <link rel="stylesheet" href="styles/header.css" />
+  <link rel="stylesheet" href="styles/main-pages.css" />
 </head>
 <body>
   <header>
-    <p>Secretary of Health</p>
+    <p>Secretaría de Salud</p>
     <div class="header-icons">
-      <img src="/imgs/doctor.svg" alt="Doctor" />
-      <img src="/imgs/healthcare.svg" alt="Logo" />
+      <img src="imgs/doctor.svg" alt="Doctor" class="photo-doctor" />
+      <img src="imgs/healthcare.svg" alt="Logo" class="photo-logo" />
     </div>
   </header>
 
   <main>
-    <h1>Expedient - Médico</h1>
-    <form action="/expedient/upload" method="post" enctype="multipart/form-data">
-      <label for="professional_id">Professional ID:</label>
-      <input type="text" id="professional_id" name="curpPaciente" required />
+    <h1>Ver Expediente de Paciente</h1>
+    <form id="viewForm">
+      <fieldset>
+        <label for="professional_id">ID Profesional:</label>
+        <input type="text" id="professional_id" name="professional_id" required />
 
-      <label for="file">Selecciona archivo:</label>
-      <input type="file" id="file" name="file" accept="image/*" required />
-
+        <label for="curpPaciente">CURP del Paciente:</label>
+        <input type="text" id="curpPaciente" name="curpPaciente" required />
+      </fieldset>
       <footer>
-        <button type="submit">Subir</button>
+        <button type="submit" class="button-continue">Continuar</button>
       </footer>
     </form>
+
+    <section id="expedientDisplay" class="expedient-display"></section>
   </main>
+
+  <script>
+    const API_BASE = 'http://localhost:8081/api/expedient';
+    const form = document.getElementById('viewForm');
+    const display = document.getElementById('expedientDisplay');
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      display.innerHTML = '';
+      const profId = form.professional_id.value.trim();
+      const curp    = form.curpPaciente.value.trim();
+      if (!profId || !curp) {
+        alert('Todos los campos son obligatorios.');
+        return;
+      }
+
+      try {
+        const resp = await fetch(`${API_BASE}/${encodeURIComponent(curp)}`);
+        if (!resp.ok) throw new Error('No se encontró expediente');
+        const exp = await resp.json();
+
+        // Busca el documento de tipo EXPEDIENT_IMAGE
+        const doc = exp.documentos.find(d => d.type === 'EXPEDIENT_IMAGE');
+        if (doc) {
+          const img = document.createElement('img');
+          img.src = `${API_BASE}/files/${encodeURIComponent(doc.name)}`;
+          img.alt = 'Imagen del expediente';
+          img.className = 'expedient-image';
+          display.appendChild(img);
+        } else {
+          display.textContent = 'No hay imágenes en el expediente.';
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error cargando expediente: ' + err.message);
+      }
+    });
+  </script>
 </body>
 </html>

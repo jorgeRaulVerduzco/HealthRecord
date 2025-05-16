@@ -1,34 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Expedient - Paciente</title>
-  <link rel="stylesheet" href="/styles/header.css" />
-  <link rel="stylesheet" href="/styles/main-pages.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Paciente ‒ Subir Expediente</title>
+  <link rel="stylesheet" href="styles/header.css" />
+  <link rel="stylesheet" href="styles/main-pages.css" />
 </head>
 <body>
   <header>
-    <p>Secretary of Health</p>
+    <p>Secretaría de Salud</p>
     <div class="header-icons">
-      <img src="/imgs/user.svg" alt="User" />
-      <img src="/imgs/healthcare.svg" alt="Logo" />
+      <img src="imgs/user.svg" alt="Usuario" class="photo-user" />
+      <img src="imgs/healthcare.svg" alt="Logo" class="photo-logo" />
     </div>
   </header>
 
   <main>
-    <h1>Expedient - Paciente</h1>
-    <form action="/expedient/upload" method="post" enctype="multipart/form-data">
-      <label for="curpPaciente">CURP Paciente:</label>
-      <input type="text" id="curpPaciente" name="curpPaciente" required />
+    <h1>Subir Documento del Expediente</h1>
+    <form id="uploadForm">
+      <fieldset>
+        <label for="curpPaciente">CURP del Paciente:</label>
+        <input type="text" id="curpPaciente" name="curpPaciente" required />
 
-      <label for="file">Selecciona archivo:</label>
-      <input type="file" id="file" name="file" accept="image/*" required />
-
+        <label for="file">Selecciona un archivo (imagen/pdf):</label>
+        <input type="file" id="file" name="file" accept="image/*,.pdf" required />
+      </fieldset>
       <footer>
-        <button type="submit">Subir</button>
+        <button type="submit" class="button-continue">Continuar</button>
       </footer>
     </form>
+
+    <section id="result" class="result-message"></section>
   </main>
+
+  <script>
+    const API_BASE = 'http://localhost:8081/api/expedient';
+    const form = document.getElementById('uploadForm');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      result.textContent = '';
+      const curp = form.curpPaciente.value.trim();
+      const file = form.file.files[0];
+      if (!curp || !file) {
+        alert('Todos los campos son obligatorios.');
+        return;
+      }
+
+      const data = new FormData();
+      data.append('curpPaciente', curp);
+      data.append('file', file);
+
+      try {
+        const resp = await fetch(`${API_BASE}/upload`, {
+          method: 'POST',
+          body: data
+        });
+        const json = await resp.json();
+        if (!resp.ok) throw new Error(json.message || 'Error desconocido');
+        result.textContent = json.message;
+      } catch (err) {
+        console.error(err);
+        alert('Error al subir: ' + err.message);
+      }
+    });
+  </script>
 </body>
 </html>
