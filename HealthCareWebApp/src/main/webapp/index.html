@@ -6,7 +6,6 @@
   <title>Authentication</title>
   <link rel="stylesheet" href="styles/authentication.css" />
   <link rel="stylesheet" href="styles/header.css" />
-
 </head>
 <body>
   <main>
@@ -15,15 +14,15 @@
       <img src="imgs/healthcare.svg" alt="Logo" class="photo-logo" />
     </header>
 
-    <form action="main-page-doctor.html" class="auth-form">
+    <form id="loginForm" class="auth-form">
       <fieldset>
         <h1>Authentication</h1>
 
-        <label for="curp">Curp:</label>
+        <label for="curp">CURP:</label>
         <input type="text" id="curp" name="curp" required />
 
-        <label for="age">Age:</label>
-        <input type="number" id="age" name="age" required />
+        <label for="password">Password:</label>
+<input type="password" id="password" name="password" required />
 
         <label>Fingerprint:</label>
         <img src="imgs/fingerprint.svg" alt="Fingerprint" class="fingerprint" />
@@ -40,5 +39,49 @@
       </fieldset>
     </form>
   </main>
+
+  <script>
+    const API_AUTH = 'http://localhost:8080/api/auth/login'; // Cambia el puerto si tu backend usa otro
+
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const curp = document.getElementById('curp').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const userType = document.querySelector('input[name="user_type"]:checked')?.value;
+
+      if (!curp || !password || !userType) {
+        alert('Todos los campos son obligatorios.');
+        return;
+      }
+
+      try {
+        const resp = await fetch(API_AUTH, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ curp: curp, password: password })
+        });
+
+        if (!resp.ok) {
+          const errorMsg = await resp.text();
+          alert('Error: ' + errorMsg);
+          return;
+        }
+
+        const data = await resp.json();
+        localStorage.setItem('jwt', data.token); // Guarda el token JWT
+
+        // Redirige según el tipo de usuario
+        if (userType === 'doctor') {
+          window.location.href = 'main-page-doctor.html';
+        } else {
+          window.location.href = 'main-page-patient.html';
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error en la autenticación: ' + err.message);
+      }
+    });
+  </script>
 </body>
 </html>

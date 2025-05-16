@@ -1,188 +1,87 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Paciente ‒ Consultar Mi Expediente</title>
+  <title>Authentication</title>
+  <link rel="stylesheet" href="styles/authentication.css" />
   <link rel="stylesheet" href="styles/header.css" />
-  <link rel="stylesheet" href="styles/main-pages.css" />
-  <style>
-    .expedient-display {
-      margin-top: 2rem;
-    }
-    
-    .expedient-image {
-      max-width: 100%;
-      border: 1px solid #ccc;
-    }
-    
-    .document-list {
-      margin-top: 2rem;
-    }
-    
-    .document-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-    
-    .document-table th, 
-    .document-table td {
-      padding: 0.5rem;
-      border: 1px solid #ddd;
-      text-align: left;
-    }
-    
-    .document-table th {
-      background-color: #f2f2f2;
-    }
-    
-    .view-btn {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-    
-    .view-btn:hover {
-      background-color: #45a049;
-    }
-    
-    .expedient-info {
-      background-color: #f8f9fa;
-      border: 1px solid #ddd;
-      padding: 1rem;
-      border-radius: 5px;
-    }
-  </style>
 </head>
 <body>
-  <header>
-    <p>Secretaría de Salud</p>
-    <div class="header-icons">
-      <img src="imgs/user.svg" alt="Usuario" class="photo-user" />
-      <img src="imgs/healthcare.svg" alt="Logo" class="photo-logo" />
-    </div>
-  </header>
-
   <main>
-    <h1>Consultar Mi Expediente</h1>
-    <form id="consultForm">
-      <fieldset>
-        <label for="curpPaciente">CURP del Paciente:</label>
-        <input type="text" id="curpPaciente" name="curpPaciente" required 
-               placeholder="Ingresa tu CURP" />
-      </fieldset>
-      <footer>
-        <button type="submit" class="button-continue">Consultar</button>
-      </footer>
-    </form>
+    <header>
+      <p>Secretary of Health</p>
+      <img src="imgs/healthcare.svg" alt="Logo" class="photo-logo" />
+    </header>
 
-    <section id="expedientDisplay" class="expedient-display"></section>
-    <div id="documentList" class="document-list"></div>
+    <form id="loginForm" class="auth-form">
+      <fieldset>
+        <h1>Authentication</h1>
+
+        <label for="curp">Curp:</label>
+        <input type="text" id="curp" name="curp" required />
+
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required />
+
+        <label>Fingerprint:</label>
+        <img src="imgs/fingerprint.svg" alt="Fingerprint" class="fingerprint" />
+
+        <label>User Type:</label>
+        <div class="user-type">
+          <input type="radio" id="doctor" name="user_type" value="doctor" required />
+          <label for="doctor">Doctor</label>
+          <input type="radio" id="patient" name="user_type" value="patient" />
+          <label for="patient">Patient</label>
+        </div>
+
+        <button type="submit" class="button-continue">Continue</button>
+      </fieldset>
+    </form>
   </main>
 
   <script>
-    const API_BASE = 'http://localhost:8081/api/expedient';
-    const form = document.getElementById('consultForm');
-    const display = document.getElementById('expedientDisplay');
-    const docList = document.getElementById('documentList');
+    const API_AUTH = 'http://localhost:8080/api/auth/login'; // Asegúrate que sea el puerto correcto
 
-    form.addEventListener('submit', async e => {
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
       e.preventDefault();
-      display.innerHTML = '';
-      docList.innerHTML = '';
-      
-      const curp = form.curpPaciente.value.trim();
-      if (!curp) {
-        alert('Por favor, ingresa tu CURP.');
+
+      const curp = document.getElementById('curp').value.trim();
+      const password = document.getElementById('age').value.trim(); // Por ahora usas 'edad' como contraseña
+
+      const userType = document.querySelector('input[name="user_type"]:checked')?.value;
+      if (!curp || !password || !userType) {
+        alert('Todos los campos son obligatorios.');
         return;
       }
 
       try {
-        const resp = await fetch(`${API_BASE}/${encodeURIComponent(curp)}`);
-        if (!resp.ok) throw new Error('No se encontró expediente');
-        const exp = await resp.json();
+        const resp = await fetch(API_AUTH, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ curp: curp, password: password })
+        });
 
-        // Mostrar información del expediente
-        const infoDiv = document.createElement('div');
-        infoDiv.className = 'expedient-info';
-        infoDiv.innerHTML = `
-          <h2>Expediente encontrado</h2>
-          <p>Paciente: ${curp}</p>
-          <p>Documentos disponibles: ${exp.documentos.length}</p>
-        `;
-        display.appendChild(infoDiv);
+        if (!resp.ok) {
+          const errorMsg = await resp.text();
+          alert('Error: ' + errorMsg);
+          return;
+        }
 
-        // Mostrar documentos
-        if (exp.documentos.length > 0) {
-          const docHeader = document.createElement('h3');
-          docHeader.textContent = 'Documentos del expediente:';
-          docList.appendChild(docHeader);
-          
-          const docTable = document.createElement('table');
-          docTable.className = 'document-table';
-          docTable.innerHTML = `
-            <thead>
-              <tr>
-                <th>Tipo</th>
-                <th>Nombre</th>
-                <th>Ver</th>
-              </tr>
-            </thead>
-            <tbody id="docTableBody"></tbody>
-          `;
-          docList.appendChild(docTable);
+        const data = await resp.json();
+        localStorage.setItem('jwt', data.token); // Guardamos el token
 
-          const tableBody = document.getElementById('docTableBody');
-          exp.documentos.forEach(doc => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${doc.type}</td>
-              <td>${doc.name}</td>
-              <td>
-                <button class="view-btn" data-filename="${doc.name}">Ver</button>
-              </td>
-            `;
-            tableBody.appendChild(row);
-          });
-
-          // Agregamos evento a los botones de ver
-          docList.querySelectorAll('.view-btn').forEach(btn => {
-            btn.addEventListener('click', e => {
-              const filename = e.target.getAttribute('data-filename');
-              display.innerHTML = '';
-              
-              if (filename.toLowerCase().endsWith('.pdf')) {
-                // Para PDFs mostramos un objeto embed
-                const embed = document.createElement('embed');
-                embed.src = `${API_BASE}/files/${encodeURIComponent(filename)}`;
-                embed.type = 'application/pdf';
-                embed.width = '100%';
-                embed.height = '500px';
-                display.appendChild(embed);
-              } else {
-                // Para imágenes
-                const img = document.createElement('img');
-                img.src = `${API_BASE}/files/${encodeURIComponent(filename)}`;
-                img.alt = 'Imagen del expediente';
-                img.className = 'expedient-image';
-                display.appendChild(img);
-              }
-            });
-          });
+        // Redirigimos según el tipo de usuario
+        if (userType === 'doctor') {
+          window.location.href = 'main-page-doctor.html';
         } else {
-          docList.innerHTML = '<p>No hay documentos en el expediente.</p>';
+          window.location.href = 'main-page-patient.html';
         }
       } catch (err) {
         console.error(err);
-        alert('Error cargando expediente: ' + err.message);
+        alert('Error en la autenticación: ' + err.message);
       }
     });
   </script>
-
-  
 </body>
 </html>
