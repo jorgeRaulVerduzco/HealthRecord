@@ -29,7 +29,7 @@ spring:
 
 # Propiedades para JWT
 jwt:
-  secret: "claveUltraSecretaJWT123!@#"  # Usa una clave fuerte en producción
+  secret: "NG63F6AqL!z9mvQb17TeRs8WhuCxd*Pb"  # Usa una clave fuerte en producción
   expiration: 3600000  # 1 hora en milisegundos
 
 springdoc:
@@ -39,3 +39,7 @@ springdoc:
     path: /swagger-ui.html
     try-it-out-enabled: true
     filter: true
+
+logging:
+  level:
+    org.springframework.security.web.firewall: TRACE

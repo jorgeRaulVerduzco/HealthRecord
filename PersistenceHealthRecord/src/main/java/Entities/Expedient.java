@@ -1,31 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+// Expedient.java
 package Entities;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
-/**
- *
- * @author JORGE
- */
 @Entity
 @Table(name = "Expedient")
 public class Expedient implements Serializable {
@@ -46,28 +28,23 @@ public class Expedient implements Serializable {
     private Date date;
 
     @OneToMany(mappedBy = "expedient", cascade = CascadeType.ALL)
-    private List<Document> documents;
+    private List<Document> documents = new ArrayList<>();
 
     @Column(name = "authorization")
     private boolean authorization;
 
-    public Expedient() {
-        this.documents = new ArrayList<>();
-    }
+    public Expedient() {}
 
     public Expedient(Patient patient, Date date, boolean authorization) {
         this.patient = patient;
         this.date = date;
         this.authorization = authorization;
-        this.documents = new ArrayList<>();
     }
 
-    // Constructor para compatibilidad con el código existente
     public Expedient(Patient patient, Date date, List<Document> documents, boolean authorization) {
         this.patient = patient;
         this.date = date;
         this.authorization = authorization;
-        this.documents = new ArrayList<>();
         if (documents != null) {
             this.documents.addAll(documents);
             for (Document doc : documents) {
@@ -114,7 +91,7 @@ public class Expedient implements Serializable {
     }
 
     public void addDocument(Document document) {
-        documents.add(document);
+        this.documents.add(document);
         document.setExpedient(this);
     }
 
@@ -128,11 +105,12 @@ public class Expedient implements Serializable {
 
     @Override
     public String toString() {
-        return "Expedient{"
-                + "expedientId=" + expedientId
-                + ", patientId=" + (patient != null ? patient.getPatientId() : "null")
-                + ", date=" + date
-                + ", documentsCount=" + (documents != null && documents instanceof Collection<?> ? ((Collection<?>) documents).size() : "lazy")
-                + ", authorization=" + authorization + '}';
+        return "Expedient{" +
+                "expedientId=" + expedientId +
+                ", patientId=" + (patient != null ? patient.getUserId() : "null") +
+                ", date=" + date +
+                ", documentsCount=" + (documents != null ? documents.size() : "lazy") +
+                ", authorization=" + authorization + '}';
     }
 }
+
