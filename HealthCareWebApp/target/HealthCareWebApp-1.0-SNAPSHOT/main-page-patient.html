@@ -1,48 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Page</title>
-    <link rel="stylesheet" href="styles/header.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Main Page - Patient</title>
+  <link rel="stylesheet" href="styles/header.css" />
   <link rel="stylesheet" href="styles/main-pages.css" />
 </head>
 <body>
   <header>
-    <p>Secretary of Health </p>
+    <p>Secretary of Health</p>
     <div class="header-icons">
-    <img src="imgs/user.svg" alt="User" class="photo-user" />
-    <img src="imgs/healthcare.svg" alt="Logo" class="photo-logo" />
+      <img src="imgs/user.svg" alt="User" class="photo-user" />
+      <img src="imgs/healthcare.svg" alt="Logo" class="photo-logo" />
     </div>
   </header>
+
   <main>
-  <h1 class="title">Electronic Medical Record</h1>
-  
-  <section class="card-container">
-    <article class="card">
-      <h2>Upload Record</h2>
-      <img src="imgs/upload.svg" alt="upload">
-      <a href="upload-record.html">
-      <button class="button-continue">Continue</button>
-      </a>
-    </article>
+    <h1 class="title">Electronic Medical Record</h1>
+    <p id="welcome-message" class="subtitle">Loading user info...</p>
 
-    <article class="card">
-      <h2>Check my file</h2>
-      <img src="imgs/check-file.svg" alt="File">
-      <a href="expedient-patient.html">
-      <button class="button-continue">Continue</button>
-      </a>
-    </article>
+    <section class="card-container">
+      <article class="card">
+        <h2>Upload Record</h2>
+        <img src="imgs/upload.svg" alt="upload" />
+        <a href="upload-record.html">
+          <button class="button-continue">Continue</button>
+        </a>
+      </article>
 
-    <article class="card">
-      <h2>Medical Appointments</h2>
-      <img src="medical-recipe.svg" alt="File">
-      <a href="appointment-details.html">
-      <button class="button-continue">Continue</button>
-      </a>
-    </article>
-  </section>
-</main>
+      <article class="card">
+        <h2>Check My File</h2>
+        <img src="imgs/check-file.svg" alt="File" />
+        <a href="expedient-patient.html">
+          <button class="button-continue">Continue</button>
+        </a>
+      </article>
+
+      <article class="card">
+        <h2>Medical Appointments</h2>
+        <img src="medical-recipe.svg" alt="Appointments" />
+        <a href="appointment-details.html">
+          <button class="button-continue">Continue</button>
+        </a>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const token = localStorage.getItem("jwt");
+
+    if (!token) {
+      alert("Debes iniciar sesión primero.");
+      window.location.href = "index.html"; // cambia a tu archivo de login
+    } else {
+      fetch("http://localhost:8080/api/patient/profile", {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      })
+        .then((response) => {
+          if (response.status === 403) {
+            alert("Acceso denegado. Solo pacientes pueden ver esta página.");
+            window.location.href = "index.html";
+          } else if (!response.ok) {
+            throw new Error("Error al obtener el perfil.");
+          }
+          return response.text();
+        })
+        .then((data) => {
+          document.getElementById("welcome-message").textContent = data;
+        })
+        .catch((error) => {
+          console.error(error);
+          alert("Error al cargar los datos del paciente.");
+        });
+    }
+  </script>
 </body>
 </html>
