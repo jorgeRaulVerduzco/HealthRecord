@@ -27,7 +27,7 @@ UserDAO userDAO = new UserDAO();
         HealthWorkerDAO hwDAO = new HealthWorkerDAO();
         ExpedientDAO expDAO = new ExpedientDAO();
         MedicalAppointmentDAO maDAO = new MedicalAppointmentDAO();
-
+/**
         // ------------------ UserDAO ------------------
         System.out.println("\n--- Probando UserDAO ---");
         User user = new User("CURP00001", "Juan", "Perez", "1234", "bioUser", 28);
@@ -237,5 +237,6 @@ UserDAO userDAO = new UserDAO();
 //        System.out.println("Eliminar cita2 por CURP Paciente: " + maDAO.buscarPorCurpPaciente("CURP00009"));
 
         System.out.println("\nPrueba de DAOs completada.");  }
-    
+    */
+}
 }

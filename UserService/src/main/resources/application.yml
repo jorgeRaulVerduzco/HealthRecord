@@ -1,0 +1,45 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/healthcare
+    username: root
+    password: 12345
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
+  output:
+    ansi:
+      enabled: always
+
+# Propiedades para JWT
+jwt:
+  secret: "NG63F6AqL!z9mvQb17TeRs8WhuCxd*Pb"  # Usa una clave fuerte en producción
+  expiration: 3600000  # 1 hora en milisegundos
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    try-it-out-enabled: true
+    filter: true
+
+logging:
+  level:
+    org.springframework.security.web.firewall: TRACE
