@@ -21,26 +21,45 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Date;
 import java.util.UUID;
 @Service
 public class ExpedientService {
 
  private final ExpedientDAO expedientDao;
+  private final PatientDAO patientDao; // Añadir DAO de pacientes
   private final Path uploadPath;
 
   @Autowired
-  public ExpedientService(ExpedientDAO expedientDao, Path uploadPath) {
+  public ExpedientService(ExpedientDAO expedientDao, PatientDAO patientDao, Path uploadPath) {
     this.expedientDao = expedientDao;
+    this.patientDao = patientDao;
     this.uploadPath = uploadPath;
   }
 
   /** Crea expediente si no existe y guarda el documento */
   public Expedient addDocumentToPatient(String curpPaciente, MultipartFile file) {
     Expedient exp = expedientDao.buscarPorCurpPaciente(curpPaciente);
+    
+    // Si no existe el expediente, verificamos si existe el paciente
     if (exp == null) {
-      // crear paciente y expediente nuevo si hace falta
-      throw new RuntimeException("Paciente con CURP " + curpPaciente + " no encontrado");
+      Patient patient = patientDao.buscarPorCurp(curpPaciente);
+      
+      // Si no existe el paciente, devolvemos error
+      if (patient == null) {
+        throw new RuntimeException("Paciente con CURP " + curpPaciente + " no encontrado");
+      }
+      
+      // Crear nuevo expediente para el paciente existente
+      exp = new Expedient();
+      exp.setPatient(patient);
+      exp.setDate(new Date());
+      exp.setAuthorization(true); // Por defecto autorizado, ajustar según necesidades
+      
+      // Guardar el expediente
+      expedientDao.crear(exp);
     }
+    
     // guardar archivo en disco
     String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
     try {
@@ -49,6 +68,7 @@ public class ExpedientService {
     } catch (IOException e) {
       throw new RuntimeException("Error guardando archivo", e);
     }
+    
     // crear entidad Document
     Document doc = new Document();
     doc.setType("EXPEDIENT_IMAGE");
@@ -80,5 +100,5 @@ public class ExpedientService {
         throw new RuntimeException("Paciente con CURP " + curpPaciente + " no encontrado");
     }
     return exp;
-}
+  }
 }

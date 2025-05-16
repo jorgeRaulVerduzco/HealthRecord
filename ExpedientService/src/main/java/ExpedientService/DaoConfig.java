@@ -5,6 +5,7 @@
 package ExpedientService;
 
 import DaoHealthRecord.ExpedientDAO;
+import DaoHealthRecord.PatientDAO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,5 +19,9 @@ public class DaoConfig {
     @Bean
     public ExpedientDAO expedientDAO() {
         return new ExpedientDAO();
+    }
+    @Bean
+    public PatientDAO patientDAO() {
+        return new PatientDAO();
     }
 }

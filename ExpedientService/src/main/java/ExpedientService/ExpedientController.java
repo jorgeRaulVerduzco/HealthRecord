@@ -9,6 +9,8 @@ package ExpedientService;
  * @author JORGE
  */
 import Entities.*;
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -19,67 +21,46 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@Controller
-@RequestMapping("/expedient")
+@RestController
+@RequestMapping("/api/expedient")
 public class ExpedientController {
 
-    private final ExpedientService expedientService;
+  private final ExpedientService service;
 
-    @Autowired
-    public ExpedientController(ExpedientService expedientService) {
-        this.expedientService = expedientService;
-    }
+  @Autowired
+  public ExpedientController(ExpedientService service) {
+    this.service = service;
+  }
 
-    /**
-     * Muestra el formulario de upload
-     */
-    @GetMapping("/upload")
-    public String showUploadForm(Model model) {
-        model.addAttribute("curpPaciente", "");
-        return "uploadForm";  // Thymeleaf: src/main/resources/templates/uploadForm.html
-    }
+  @PostMapping("/upload")
+  public ResponseEntity<Map<String,String>> upload(
+      @RequestParam String curpPaciente,
+      @RequestParam MultipartFile file) {
+    service.addDocumentToPatient(curpPaciente, file);
+    return ResponseEntity.ok(Map.of("message", "Archivo subido correctamente"));
+  }
 
-    /**
-     * Procesa el envío del formulario
-     */
-    @PostMapping("/upload")
-    public String handleFileUpload(
-            @RequestParam("curpPaciente") String curp,
-            @RequestParam("file") MultipartFile file,
-            RedirectAttributes ra) {
+  @GetMapping("/{curp}")
+  public ResponseEntity<ExpedientDTO> getExpedient(@PathVariable String curp) {
+    Expedient exp = service.getExpedientByCurp(curp);
+    ExpedientDTO dto = new ExpedientDTO(
+      exp.getPatient().getCurp(),
+      exp.getDocuments().stream()
+         .map(d -> new DocumentDTO(d.getType(), d.getNameDocument()))
+         .toList()
+    );
+    return ResponseEntity.ok(dto);
+  }
 
-        expedientService.addDocumentToPatient(curp, file);
-        ra.addFlashAttribute("message", "Archivo subido correctamente.");
-        return "redirect:/expedient/view/" + curp;
-    }
+  @GetMapping("/files/{filename:.+}")
+  public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+    Resource file = service.loadDocumentAsResource(filename);
+    return ResponseEntity.ok()
+      .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+      .body(file);
+  }
 
-    /**
-     * Muestra la vista con la imagen ya cargada
-     */
-    @GetMapping("/view/{curp}")
-    public String viewExpedient(@PathVariable String curp, Model model) {
-        Expedient exp = expedientService.getExpedientByCurp(curp);  // ✅ Acceso correcto
-
-        String filename = exp.getDocuments().stream()
-                .filter(d -> "EXPEDIENT_IMAGE".equals(d.getType()))
-                .findFirst()
-                .map(Document::getNameDocument)
-                .orElse("no-image.png");
-
-        model.addAttribute("imageName", filename);
-        model.addAttribute("curpPaciente", curp);
-        return "viewExpedient";
-    }
-
-    /**
-     * Sirve el recurso estático (imagen)
-     */
-    @GetMapping("/files/{filename:.+}")
-    @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-        Resource file = expedientService.loadDocumentAsResource(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getFilename() + "\"")
-                .body(file);
-    }
+  // DTOs internos
+  public record ExpedientDTO(String curpPaciente, List<DocumentDTO> documentos){}
+  public record DocumentDTO(String type, String name){}
 }
