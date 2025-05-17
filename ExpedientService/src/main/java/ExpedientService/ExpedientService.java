@@ -94,7 +94,7 @@ public class ExpedientService {
         return exp;
     }
 
-    /**
+    /**FD
      * Devuelve la ruta absoluta del recurso para servirlo
      */
     public Resource loadDocumentAsResource(String filename) {
