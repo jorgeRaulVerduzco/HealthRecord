@@ -1,4 +1,5 @@
 ExpedientService\WebConfig.class
+ExpedientService\RabbitMQConfig.class
 ExpedientService\ExpedientController.class
 ExpedientService\DaoConfig.class
 ExpedientService\FileStorageConfig.class

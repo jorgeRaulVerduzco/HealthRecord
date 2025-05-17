@@ -1,0 +1,7 @@
+Dtos\TutorDTO.class
+Dtos\MedicalAppointmentDTO.class
+Dtos\PatientDTO.class
+Dtos\DocumentDTO.class
+Dtos\UserDTO.class
+Dtos\ExpedientDTO.class
+Dtos\HealthWorkerDTO.class
